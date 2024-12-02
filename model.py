@@ -181,7 +181,7 @@ plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
 plt.plot(history.history['accuracy'], label='Tanulási pontosság')
-plt.plot(history.history['val_accuracy'], label='Validációs Pontosság')
+plt.plot(history.history['val_accuracy'], label='Validációs pontosság')
 plt.title('Modell pontosság')
 plt.xlabel('Tanulási ciklus')
 plt.ylabel('Pontosság')
