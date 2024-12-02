@@ -13,26 +13,26 @@ class DroneNoiseDetectorApp:
         self.audio_buffer = []
         self.sample_rate = 16000
         self.segment_duration = 1.0  # Szegmens időtartama másodpercben
-        self.no_signal_detected = False  # Nincs jelzajzászás flag
+        self.no_signal_detected = False
 
         # Modell betöltése
         self.model = load_model('best_drone_noise_detector_model.keras')
 
         # GUI elrendezés
-        self.label = ttk.Label(root, text="Drón Zaj Detektor", font=("Arial", 16))
+        self.label = ttk.Label(root, text="Drone Noise Detector", font=("Arial", 16))
         self.label.pack(pady=10)
 
         # Drón jelző
-        self.drone_indicator = tk.Label(root, text="DRÓN", bg="gray", fg="white", font=("Arial", 16), width=10)
+        self.drone_indicator = tk.Label(root, text="DRONE", bg="gray", fg="white", font=("Arial", 16), width=10)
         self.drone_indicator.pack(pady=10)
 
         # Felvétel gomb
-        self.start_button = tk.Button(root, text="Felvétel", bg="lightgray", font=("Arial", 12),
+        self.start_button = tk.Button(root, text="Recording", bg="lightgray", font=("Arial", 12),
                                        command=self.start_recording)
         self.start_button.pack(pady=5)
 
         # Stop gomb
-        self.stop_button = tk.Button(root, text="Leállítás", bg="lightgray", font=("Arial", 12),
+        self.stop_button = tk.Button(root, text="Stop", bg="lightgray", font=("Arial", 12),
                                       command=self.stop_recording)
         self.stop_button.pack(pady=5)
 
@@ -84,7 +84,7 @@ class DroneNoiseDetectorApp:
             # Predikció
             prediction = self.model.predict(mfcc_features)
             probability = prediction[0][0]
-            threshold = 0.99
+            threshold = 0.5
 
             # Drón indikátor frissítése (ha nincs jel, nem változik)
             if not self.no_signal_detected:
