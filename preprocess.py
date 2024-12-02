@@ -32,13 +32,13 @@ for filename in os.listdir(input_dir):
             # Mono eset
             channels = [audio_data]
         else:
-            # Sztereó eset: minden csatornát külön kezelünk
+            # Sztereó fájl esetén minden csatornát külön kezelünk
             channels = [audio_data[0], audio_data[1]]
 
         # Ha nincs egyedi név megadva, használjuk az eredeti fájlnevet
         base_name = custom_base_name if custom_base_name else os.path.splitext(filename)[0]
 
-        # Szeletek mentése mindkét csatornához
+        # Minták mentése mindkét csatornához
         for channel_index, channel_data in enumerate(channels):
             channel_name = 'left' if channel_index == 0 else 'right'  # Csatorna megnevezése
             samples_per_slice = int(slice_duration * target_sample_rate)  # Szelet mérete mintákban

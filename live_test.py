@@ -11,10 +11,10 @@ def extract_mfcc(file_path, sr=16000, n_mfcc=40):
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
     return np.mean(mfcc.T, axis=0)
 
-# Összegyűjtjük az MFCC jellemzőket az összes WAV fájlhoz
+# Összegyűjtjük az MFCC jellemzőket az összes WAV fájlból
 mfcc_features = []
 file_paths = []
-output_dir = r'C:\Drone_Dataset\test\no_drone'  # Az a mappa, ahol az audio chunk-ek vannak
+output_dir = r'C:\Drone_Dataset\test\no_drone'
 
 for filename in os.listdir(output_dir):
     if filename.endswith('.wav'):
@@ -22,10 +22,10 @@ for filename in os.listdir(output_dir):
         mfcc_features.append(extract_mfcc(file_path))
         file_paths.append(file_path)
 
-# MFCC jellemzők átalakítása NumPy tömbbé a klaszterezéshez
+# MFCC jellemzők átalakítása numpy tömbbé a klaszterezéshez
 mfcc_features = np.array(mfcc_features)
 
-# PCA alkalmazása a dimenziók csökkentésére (vizualizációhoz)
+# PCA alkalmazása a dimenziók csökkentésére
 pca = PCA(n_components=2)
 reduced_features = pca.fit_transform(mfcc_features)
 
@@ -47,27 +47,27 @@ plt.show()
 cluster_representatives = {}
 for i, label in enumerate(labels):
     if label not in cluster_representatives:
-        cluster_representatives[label] = file_paths[i]  # Az első fájl mentése a klaszterből
+        cluster_representatives[label] = file_paths[i]
 
 # A klaszterezett fájlok mentésére használt mappa
 representative_dir = r'C:\Drone_Dataset\test\clustered_no_drone'
 os.makedirs(representative_dir, exist_ok=True)
 
 # Számláló a fájlok sorszámozásához
-file_counter = 1  # A számozás kezdőértéke
+file_counter = 1
 
 # Iterálás a klaszterek reprezentatív fájljain
 for cluster, file_path in cluster_representatives.items():
-    # Az eredeti fájlnév
+    # Eredeti fájlnév
     original_filename = os.path.basename(file_path)
 
     # Új fájlnév generálása (eredeti név megtartása)
-    new_filename = f"{file_counter}_{original_filename}"  # Példa: "1_eredetinev.wav"
+    new_filename = f"{file_counter}_{original_filename}"
 
-    # Az új fájl útvonalának meghatározása
+    # Új fájl útvonalának meghatározása
     output_path = os.path.join(representative_dir, new_filename)
 
-    # A fájl áthelyezése és átnevezése
+    # Fájl áthelyezése és átnevezése
     os.rename(file_path, output_path)
 
     # Növeljük a számlálót

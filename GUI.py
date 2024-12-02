@@ -22,7 +22,7 @@ class DroneNoiseDetectorApp:
         self.label = ttk.Label(root, text="Drón Zaj Detektor", font=("Arial", 16))
         self.label.pack(pady=10)
 
-        # Drón kijelző (lámpa)
+        # Drón jelző
         self.drone_indicator = tk.Label(root, text="DRÓN", bg="gray", fg="white", font=("Arial", 16), width=10)
         self.drone_indicator.pack(pady=10)
 
@@ -36,7 +36,7 @@ class DroneNoiseDetectorApp:
                                       command=self.stop_recording)
         self.stop_button.pack(pady=5)
 
-        # Nincs jel kijelző
+        # Nincs jel jelző
         self.no_signal_label = tk.Label(root, text="", font=("Arial", 10), fg="red")
         self.no_signal_label.pack(pady=10)
 
@@ -57,7 +57,7 @@ class DroneNoiseDetectorApp:
         if indata.ndim > 1:
             indata = indata[:, 0]
 
-        # Ellenőrizni, hogy halk-e a jel
+        # Ellenőrizzük hogy halk-e a jel
         if np.abs(indata).max() < 0.01:  # Küszöb csend érzékeléséhez
             self.no_signal_label.config(text="Nincs bemeneti jel!")
             self.no_signal_detected = True
@@ -92,7 +92,7 @@ class DroneNoiseDetectorApp:
                     self.drone_indicator.config(bg="red")
                 else:
                     self.drone_indicator.config(bg="gray")
-
+    # Felvétel indítása
     def start_recording(self):
         if not self.is_recording:
             self.is_recording = True
@@ -103,6 +103,7 @@ class DroneNoiseDetectorApp:
             self.stream.start()
             self.flash_start_button()
 
+    # Felvétel leállítása
     def stop_recording(self):
         if self.is_recording:
             self.is_recording = False
@@ -111,7 +112,6 @@ class DroneNoiseDetectorApp:
             self.start_button.config(bg="lightgray")  # Alapértelmezett szín visszaállítása
 
     def flash_start_button(self):
-        """Villogó gomb a felvétel állapotának jelzésére"""
         if self.is_recording:
             current_color = self.start_button.cget("bg")
             new_color = "red" if current_color == "lightgray" else "lightgray"
