@@ -51,7 +51,7 @@ def process_wav_directories_with_normalization(drone_dir, non_drone_dir, segment
     return X, y
 
 
-# Útvonalak megadása
+#  Útvonalak megadása
 drone_directory = r"C:\Drone_Dataset\test\drone"
 non_drone_directory = r"C:\Drone_Dataset\test\non_drone"
 

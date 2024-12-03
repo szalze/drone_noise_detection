@@ -1,83 +1,69 @@
-import os
-import librosa
 import numpy as np
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
+import librosa
+import sounddevice as sd
+from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.models import load_model
 
-# MFCC jellemzők kinyerése klaszterezéshez
-def extract_mfcc(file_path, sr=16000, n_mfcc=40):
-    y, sr = librosa.load(file_path, sr=sr)
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
-    return np.mean(mfcc.T, axis=0)
+# Töltsük be a betanított modellt
+model = load_model('drone_noise_detector_model.keras')
 
-# Összegyűjtjük az MFCC jellemzőket az összes WAV fájlból
-mfcc_features = []
-file_paths = []
-output_dir = r'C:\Drone_Dataset\test\no_drone'
+# Definiáljuk a mintavételi frekvenciát és az egyes szegmensek hosszát (1 másodperc)
+sample_rate = 16000  # Eredeti mintavételi frekvencia valós idejű rögzítéshez
+segment_duration = 1.0
 
-for filename in os.listdir(output_dir):
-    if filename.endswith('.wav'):
-        file_path = os.path.join(output_dir, filename)
-        mfcc_features.append(extract_mfcc(file_path))
-        file_paths.append(file_path)
 
-# MFCC jellemzők átalakítása numpy tömbbé a klaszterezéshez
-mfcc_features = np.array(mfcc_features)
+scaler = StandardScaler()
+scaler.mean_ = np.zeros(40)
+scaler.scale_ = np.ones(40)
 
-# PCA alkalmazása a dimenziók csökkentésére
-pca = PCA(n_components=2)
-reduced_features = pca.fit_transform(mfcc_features)
 
-# K-Means klaszterezés
-n_clusters = 3000  # Állítsd be az elvárt változatosság alapján
-kmeans = KMeans(n_clusters=n_clusters, random_state=0)
-labels = kmeans.fit_predict(mfcc_features)
+def extract_mfcc(audio_segment, sample_rate):
 
-# Klaszterek vizualizálása
-plt.figure(figsize=(10, 6))
-plt.scatter(reduced_features[:, 0], reduced_features[:, 1], c=labels, cmap='viridis', alpha=0.6)
-plt.title('Nem-drón hangok K-Means klaszterezése')
-plt.xlabel('PCA komponens 1')
-plt.ylabel('PCA komponens 2')
-plt.colorbar(label='Klaszter')
-plt.show()
+    mfcc = librosa.feature.mfcc(y=audio_segment, sr=sample_rate, n_mfcc=40)
+    mfcc = np.mean(mfcc.T, axis=0)
 
-# Egy reprezentatív fájl kiválasztása klaszterenként
-cluster_representatives = {}
-for i, label in enumerate(labels):
-    if label not in cluster_representatives:
-        cluster_representatives[label] = file_paths[i]
+    # Normalizáljuk az MFCC-t [0, 1] tartományra
+    normalized_mfcc = (mfcc - np.min(mfcc)) / (np.max(mfcc) - np.min(mfcc))
+    return normalized_mfcc
 
-# A klaszterezett fájlok mentésére használt mappa
-representative_dir = r'C:\Drone_Dataset\test\clustered_no_drone'
-os.makedirs(representative_dir, exist_ok=True)
 
-# Számláló a fájlok sorszámozásához
-file_counter = 1
+def audio_callback(indata, frames, time, status):
 
-# Iterálás a klaszterek reprezentatív fájljain
-for cluster, file_path in cluster_representatives.items():
-    # Eredeti fájlnév
-    original_filename = os.path.basename(file_path)
+    if status:
+        print(status)
 
-    # Új fájlnév generálása (eredeti név megtartása)
-    new_filename = f"{file_counter}_{original_filename}"
+    # Gondoskodunk róla, hogy az audio mono legyen
+    if indata.ndim > 1:
+        indata = indata[:, 0]
 
-    # Új fájl útvonalának meghatározása
-    output_path = os.path.join(representative_dir, new_filename)
+    # Reszampeljük az audio-t 16000 Hz-re
+    indata_resampled = librosa.resample(indata, orig_sr=sample_rate, target_sr=16000)
 
-    # Fájl áthelyezése és átnevezése
-    os.rename(file_path, output_path)
+    # Kinyerjük az MFCC jellemzőket az átméretezett szegmensből
+    mfcc_features = extract_mfcc(indata_resampled, 16000)  # Most már 16000 Hz mintavételi frekvencia
 
-    # Növeljük a számlálót
-    file_counter += 1
+    # Átalakítjuk a bemenet formáját a modell számára
+    mfcc_features = np.expand_dims(mfcc_features, axis=0)
 
-# Az összes fájl törlése az eredeti output könyvtárból
-for filename in os.listdir(output_dir):
-    file_path = os.path.join(output_dir, filename)
-    if os.path.isfile(file_path):
-        os.remove(file_path)
+    # Predikció készítése
+    prediction = model.predict(mfcc_features)
 
-print(f"{len(cluster_representatives)} reprezentatív fájl lett elmentve ide: {representative_dir}. "
-      f"Az összes feldolgozott fájl törölve lett innen: {output_dir}.")
+    # A valószínűség kinyerése
+    probability = prediction[0][0]
+
+    # Küszöbérték beállítása, ha szükséges
+    threshold = 0.5
+
+    # A drónos osztály vagy a nem drónos észlelés valószínűségének kiírása
+    if probability > threshold:
+        print(f"Drone noise detected with {probability * 100:.2f}% confidence")
+    else:
+        print(f"No drone noise detected with {(1 - probability) * 100:.2f}% confidence")
+
+# Az audio stream indítása
+with sd.InputStream(callback=audio_callback, channels=1, samplerate=sample_rate,
+                    blocksize=int(sample_rate * segment_duration)):
+    print("Listening for drone noise... Press Ctrl+C to stop.")
+    sd.sleep(int(segment_duration * 1000) * 60)  # Listen for 60 seconds
+
+print("Stopped listening.")

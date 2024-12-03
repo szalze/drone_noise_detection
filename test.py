@@ -17,7 +17,7 @@ def extract_mfcc(audio_segment, sample_rate):
 model = load_model('best_drone_noise_detector_model.keras')
 
 # Az új tesztelendő audiofájl elérési útjának megadása
-test_audio_path = r'C:\Drone_Dataset\teszt\drone\GX015000.wav'
+test_audio_path = r''
 
 # Az egész audiofájl betöltése
 audio, sample_rate = librosa.load(test_audio_path, res_type="kaiser_fast", mono=True)

@@ -10,7 +10,7 @@ os.makedirs(output_dir, exist_ok=True)  # Ha a mappa nem létezik, hozzuk létre
 # Egyedi alapnév az output fájlokhoz (ha üres, az eredeti fájlnevet használja)
 custom_base_name = ""
 
-# Szelet hossza másodpercben
+# Minta hossza másodpercben
 slice_duration = 1
 
 # Célszámítási frekvencia újramintavételezéshez

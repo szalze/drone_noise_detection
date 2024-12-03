@@ -16,7 +16,7 @@ class DroneNoiseDetectorApp:
         self.no_signal_detected = False
 
         # Modell betöltése
-        self.model = load_model('best_drone_noise_detector_model.keras')
+        self.model = load_model('drone_noise_detector_model.keras')
 
         # GUI elrendezés
         self.label = ttk.Label(root, text="Drone Noise Detector", font=("Arial", 16))
@@ -59,7 +59,7 @@ class DroneNoiseDetectorApp:
 
         # Ellenőrizzük hogy halk-e a jel
         if np.abs(indata).max() < 0.01:  # Küszöb csend érzékeléséhez
-            self.no_signal_label.config(text="Nincs bemeneti jel!")
+            self.no_signal_label.config(text="No signal!")
             self.no_signal_detected = True
         else:
             self.no_signal_label.config(text="")
@@ -84,7 +84,7 @@ class DroneNoiseDetectorApp:
             # Predikció
             prediction = self.model.predict(mfcc_features)
             probability = prediction[0][0]
-            threshold = 0.5
+            threshold = 0.9
 
             # Drón indikátor frissítése (ha nincs jel, nem változik)
             if not self.no_signal_detected:
