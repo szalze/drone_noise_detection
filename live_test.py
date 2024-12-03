@@ -48,19 +48,11 @@ def audio_callback(indata, frames, time, status):
     # Predikció készítése
     prediction = model.predict(mfcc_features)
 
-    # A valószínűség kinyerése
+    # Valószínűség kiszámítása
     probability = prediction[0][0]
+    print(f"Drone noise detected with {probability * 100:.2f}% confidence")
 
-    # Küszöbérték beállítása, ha szükséges
-    threshold = 0.5
-
-    # A drónos osztály vagy a nem drónos észlelés valószínűségének kiírása
-    if probability > threshold:
-        print(f"Drone noise detected with {probability * 100:.2f}% confidence")
-    else:
-        print(f"No drone noise detected with {(1 - probability) * 100:.2f}% confidence")
-
-# Az audio stream indítása
+# Audio stream indítása
 with sd.InputStream(callback=audio_callback, channels=1, samplerate=sample_rate,
                     blocksize=int(sample_rate * segment_duration)):
     print("Listening for drone noise... Press Ctrl+C to stop.")
