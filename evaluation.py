@@ -15,7 +15,7 @@ def load_files_from_directory(directory):
 
 
 # MFCC jellemzők kinyerése és normalizálása
-def extract_normalized_mfcc_from_wav(file_path, segment_duration=1.0, sample_rate=16100, n_mfcc=40):
+def extract_normalized_mfcc_from_wav(file_path, segment_duration=1.0, sample_rate=16000, n_mfcc=40):
     audio, sr = librosa.load(file_path, sr=sample_rate)
     segment_samples = int(segment_duration * sr)
     mfcc_features = []
