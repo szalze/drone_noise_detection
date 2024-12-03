@@ -8,14 +8,8 @@ from tensorflow.keras.models import load_model
 model = load_model('drone_noise_detector_model.keras')
 
 # Definiáljuk a mintavételi frekvenciát és az egyes szegmensek hosszát (1 másodperc)
-sample_rate = 16000  # Eredeti mintavételi frekvencia valós idejű rögzítéshez
+sample_rate = 48000
 segment_duration = 1.0
-
-
-scaler = StandardScaler()
-scaler.mean_ = np.zeros(40)
-scaler.scale_ = np.ones(40)
-
 
 def extract_mfcc(audio_segment, sample_rate):
 
@@ -40,7 +34,7 @@ def audio_callback(indata, frames, time, status):
     indata_resampled = librosa.resample(indata, orig_sr=sample_rate, target_sr=16000)
 
     # Kinyerjük az MFCC jellemzőket az átméretezett szegmensből
-    mfcc_features = extract_mfcc(indata_resampled, 16000)  # Most már 16000 Hz mintavételi frekvencia
+    mfcc_features = extract_mfcc(indata_resampled, 16000)
 
     # Átalakítjuk a bemenet formáját a modell számára
     mfcc_features = np.expand_dims(mfcc_features, axis=0)
@@ -50,12 +44,12 @@ def audio_callback(indata, frames, time, status):
 
     # Valószínűség kiszámítása
     probability = prediction[0][0]
-    print(f"Drone noise detected with {probability * 100:.2f}% confidence")
+    print(f'{probability * 100:.2f}% valószínűséggel drónzaj.')
 
 # Audio stream indítása
 with sd.InputStream(callback=audio_callback, channels=1, samplerate=sample_rate,
                     blocksize=int(sample_rate * segment_duration)):
-    print("Listening for drone noise... Press Ctrl+C to stop.")
-    sd.sleep(int(segment_duration * 1000) * 60)  # Listen for 60 seconds
+    print('Drónzaj észlelés... Nyomd meg a Ctrl+C-t a leállításhoz.')
+    sd.sleep(int(segment_duration * 1000) * 60)
 
-print("Stopped listening.")
+print('Leállt a felvétel.')

@@ -14,7 +14,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorB
 # MFCC jellemzők kinyerése a wav fájlokból
 def extract_mfcc(audio_path, sr=16000):
     # Audiofájl betöltése
-    audio, _ = librosa.load(audio_path, sr=sr, res_type="kaiser_fast", mono=True)
+    audio, _ = librosa.load(audio_path, sr=sr, res_type='kaiser_fast', mono=True)
 
     # MFCC jellemzők kinyerése
     mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=40)
@@ -50,7 +50,7 @@ def augment_audio(audio, sr):
 
 
 # Adatok helye és osztályok definiálása
-data_dir = r'C:\Drone_Dataset'
+data_dir = r''
 classes = ['non_drone', 'drone']
 
 # Adatok összegyűjtése és címkézése
@@ -79,7 +79,7 @@ sr = 16000
 if augment_count > 0:
     for i in range(augment_count):
         idx = i % len(drone_files)
-        audio, _ = librosa.load(drone_files.iloc[idx]['file_path'], sr=sr, res_type="kaiser_fast", mono=True)
+        audio, _ = librosa.load(drone_files.iloc[idx]['file_path'], sr=sr, res_type='kaiser_fast', mono=True)
         augmentations = augment_audio(audio, sr)
 
         for augmented_audio in augmentations:
@@ -89,15 +89,15 @@ if augment_count > 0:
 
 # Augmentált adatok hozzáadása a DataFrame-hez
 augmented_df = pd.DataFrame(augmented_features, columns=['feature', 'class_label'])
-print(f"Augmentáció kész: {len(augmented_df)} új minta készült.")
+print(f'Augmentáció kész: {len(augmented_df)} új minta készült.')
 
 # Eredeti és augmentált jellemzők kombinálása
 features = []
 
 for index_num, row in labels_df.iterrows():
     # Fájlútvonal és osztály lekérése
-    file_path = row["file_path"]
-    class_label = row["class"]
+    file_path = row['file_path']
+    class_label = row['class']
 
     # Jellemzők kinyerése
     extract = extract_mfcc(file_path)
@@ -113,11 +113,11 @@ features_df = pd.DataFrame(features, columns=['feature', 'class_label'])
 
 # Jellemzők mentése CSV fájlba
 features_df.to_csv('extracted_features.csv', index=False)
-print("Tanító adatok elmentve.")
+print('Tanító adatok elmentve.')
 
 # Adatok előkészítése a tanításhoz
-X = np.array(features_df["feature"].tolist())
-y = np.array(features_df["class_label"].tolist())
+X = np.array(features_df['feature'].tolist())
+y = np.array(features_df['class_label'].tolist())
 
 # Címkék kódolása (0: non_drone, 1: drone)
 label_encoder = LabelEncoder()
@@ -140,19 +140,19 @@ model = Sequential()
 input_shape = (40, 1)
 
 # Első konvolúciós blokk
-model.add(Conv1D(256, kernel_size=3, padding="same", strides=1, input_shape=input_shape, activation="relu"))
+model.add(Conv1D(256, kernel_size=3, padding='same', strides=1, input_shape=input_shape, activation='relu'))
 model.add(BatchNormalization())
-model.add(MaxPooling1D(pool_size=3, strides=1, padding="same"))
+model.add(MaxPooling1D(pool_size=3, strides=1, padding='same'))
 
 # Második konvolúciós blokk
-model.add(Conv1D(256, kernel_size=3, strides=1, padding="same", activation="relu"))
+model.add(Conv1D(256, kernel_size=3, strides=1, padding='same', activation='relu'))
 model.add(BatchNormalization())
-model.add(MaxPooling1D(pool_size=3, strides=1, padding="same"))
+model.add(MaxPooling1D(pool_size=3, strides=1, padding='same'))
 
 # Harmadik konvolúciós blokk
-model.add(Conv1D(128, kernel_size=3, strides=1, padding="same", activation="relu"))
+model.add(Conv1D(128, kernel_size=3, strides=1, padding='same', activation='relu'))
 model.add(BatchNormalization())
-model.add(MaxPooling1D(pool_size=3, strides=1, padding="same"))
+model.add(MaxPooling1D(pool_size=3, strides=1, padding='same'))
 
 # Dropout réteg
 model.add(Dropout(0.3))
@@ -161,18 +161,18 @@ model.add(Dropout(0.3))
 model.add(Flatten())
 
 # Dense réteg
-model.add(Dense(512, activation="relu"))
+model.add(Dense(512, activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.2))
 
 # Kimenet
-model.add(Dense(1, activation="sigmoid"))
+model.add(Dense(1, activation='sigmoid'))
 
 # Modell fordítása
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 # Callbackek definiálása
-learning_rate_reduction = ReduceLROnPlateau(monitor="val_accuracy", patience=5, verbose=1, factor=0.5, min_lr=0.00001)
+learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy', patience=5, verbose=1, factor=0.5, min_lr=0.00001)
 early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 model_checkpoint = ModelCheckpoint('best_drone_noise_detector_model.keras', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
@@ -181,7 +181,7 @@ history = model.fit(X_train, y_train, epochs=60, batch_size=32, validation_data=
 
 # Modell mentése
 model.save('drone_noise_detector_model.keras')
-print("A modell elmentve.")
+print('A modell elmentve.')
 
 # Eredmények ábrázolása
 plt.figure(figsize=(12, 5))

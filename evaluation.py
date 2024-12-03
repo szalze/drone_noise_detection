@@ -11,7 +11,7 @@ from tensorflow.keras.models import load_model
 
 # Mappa bejárása és fájlok összegyűjtése
 def load_files_from_directory(directory):
-    return [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith(".wav")]
+    return [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith('.wav')]
 
 
 # MFCC jellemzők kinyerése és normalizálása
@@ -47,19 +47,19 @@ def process_wav_directories_with_normalization(drone_dir, non_drone_dir, segment
         non_drone_features.extend(extract_normalized_mfcc_from_wav(file, segment_duration))
 
     X = np.array(drone_features + non_drone_features)
-    y = np.array(["drone"] * len(drone_features) + ["non_drone"] * len(non_drone_features))
+    y = np.array(['drone'] * len(drone_features) + ['non_drone'] * len(non_drone_features))
     return X, y
 
 
 #  Útvonalak megadása
-drone_directory = r"C:\Drone_Dataset\test\drone"
-non_drone_directory = r"C:\Drone_Dataset\test\non_drone"
+drone_directory = r''
+non_drone_directory = r''
 
 # Adatok feldolgozása
 X, y = process_wav_directories_with_normalization(drone_directory, non_drone_directory)
 
 # Modell betöltése
-model = load_model("best_drone_noise_detector_model.keras")
+model = load_model('best_drone_noise_detector_model.keras')
 
 # Előrejelzés
 y_pred_prob = model.predict(X)
@@ -76,11 +76,11 @@ recall = recall_score(y_encoded, y_pred)
 f1 = f1_score(y_encoded, y_pred)
 auc_score = roc_auc_score(y_encoded, y_pred_prob)
 
-print(f"Accuracy: {accuracy:.2f}")
-print(f"Precision: {precision:.2f}")
-print(f"Recall: {recall:.2f}")
-print(f"F1-score: {f1:.2f}")
-print(f"AUC-ROC: {auc_score:.2f}")
+print(f'Accuracy: {accuracy:.2f}')
+print(f'Precision: {precision:.2f}')
+print(f'Recall: {recall:.2f}')
+print(f'F1-score: {f1:.2f}')
+print(f'AUC-ROC: {auc_score:.2f}')
 
 # Ábrák készítése
 # Konfúziós mátrix
@@ -94,21 +94,21 @@ plt.show()
 fpr, tpr, _ = roc_curve(y_encoded, y_pred_prob)
 plt.figure(figsize=(8, 6))
 plt.plot(fpr, tpr, label=f"AUC = {auc_score:.2f}")
-plt.plot([0, 1], [0, 1], "k--", label="Véletlen találat (baseline)")
-plt.title("ROC-görbe")
-plt.xlabel("Hamis pozitív arány (FPR)")
-plt.ylabel("Igaz pozitív arány (TPR)")
-plt.legend(loc="lower right")
+plt.plot([0, 1], [0, 1], "k--", label='Véletlen találat (baseline)')
+plt.title('ROC-görbe')
+plt.xlabel('Hamis pozitív arány (FPR)')
+plt.ylabel('Igaz pozitív arány (TPR)')
+plt.legend(loc='lower right')
 plt.grid(True)
 plt.show()
 
 # Precízió-recall görbe
 precisions, recalls, thresholds = precision_recall_curve(y_encoded, y_pred_prob)
 plt.figure(figsize=(8, 6))
-plt.plot(recalls, precisions, label=f"F1-score = {f1:.2f}")
-plt.title("Precízió-visszahívás görbe")
-plt.xlabel("Visszahívás")
+plt.plot(recalls, precisions, label=f'F1-pontszám = {f1:.2f}')
+plt.title('Precízió-visszahívás görbe')
+plt.xlabel('Visszahívás')
 plt.ylabel("Precízió")
-plt.legend(loc="lower left")
+plt.legend(loc='lower left')
 plt.grid(True)
 plt.show()

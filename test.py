@@ -17,10 +17,10 @@ def extract_mfcc(audio_segment, sample_rate):
 model = load_model('best_drone_noise_detector_model.keras')
 
 # Az új tesztelendő audiofájl elérési útjának megadása
-test_audio_path = r''
+test_audio_path = r""
 
 # Az egész audiofájl betöltése
-audio, sample_rate = librosa.load(test_audio_path, res_type="kaiser_fast", mono=True)
+audio, sample_rate = librosa.load(test_audio_path, res_type='kaiser_fast', mono=True)
 
 # Az audio újramintavételezése 16 kHz-re
 audio_resampled = librosa.resample(audio, orig_sr=sample_rate, target_sr=16000)
@@ -61,5 +61,5 @@ for start in range(0, len(audio_resampled), segment_samples):
 drone_detection_percentage = (drone_detected_count / total_segments) * 100
 
 # Az eredmény kiírása
-print(f"Drónzaj észlelve a szegmensek {drone_detection_percentage:.2f}%-ában.")
+print(f'Drónzaj észlelve a szegmensek {drone_detection_percentage:.2f}%-ában.')
 

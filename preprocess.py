@@ -3,8 +3,8 @@ import librosa
 import soundfile as sf
 
 # Beállítások
-input_dir = r'C:\Users\szalz\Downloads\Pro.Sound.Effects.Library.Chicago.Ambisonics.WAV\CHI Ambisonics Stereo'  # Az eredeti wav fájlok mappája.
-output_dir = r'C:\Drone_Dataset\resampled_no_drone'  # A feldarabolt fájlok mentési mappája.
+input_dir = r''  # Az eredeti wav fájlok mappája.
+output_dir = r''  # A feldarabolt fájlok mentési mappája.
 os.makedirs(output_dir, exist_ok=True)  # Ha a mappa nem létezik, hozzuk létre.
 
 # Egyedi alapnév az output fájlokhoz (ha üres, az eredeti fájlnevet használja)

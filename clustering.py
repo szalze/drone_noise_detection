@@ -14,7 +14,7 @@ def extract_mfcc(file_path, sr=16000, n_mfcc=40):
 # Összegyűjtjük az MFCC jellemzőket az összes WAV fájlhoz
 mfcc_features = []
 file_paths = []
-output_dir = r'C:\Drone_Dataset\test\non_drone'
+output_dir = r''
 
 for filename in os.listdir(output_dir):
     if filename.endswith('.wav'):
@@ -49,7 +49,7 @@ for i, label in enumerate(labels):
         cluster_representatives[label] = file_paths[i]
 
 # A klaszterezett fájlok mentésére használt mappa
-representative_dir = r'C:\Drone_Dataset\test\clustered_non_drone'
+representative_dir = r''
 os.makedirs(representative_dir, exist_ok=True)
 
 # Számláló a fájlok sorszámozásához
@@ -61,7 +61,7 @@ for cluster, file_path in cluster_representatives.items():
     original_filename = os.path.basename(file_path)
 
     # Új fájlnév generálása (eredeti név megtartása)
-    new_filename = f"{file_counter}_{original_filename}"
+    new_filename = f'{file_counter}_{original_filename}'
 
     # Az új fájl útvonalának meghatározása
     output_path = os.path.join(representative_dir, new_filename)
@@ -78,5 +78,5 @@ for filename in os.listdir(output_dir):
     if os.path.isfile(file_path):
         os.remove(file_path)
 """
-print(f"{len(cluster_representatives)} reprezentatív fájl lett elmentve ide: {representative_dir}. "
-      f"Az összes feldolgozott fájl törölve lett innen: {output_dir}.")
+print(f'{len(cluster_representatives)} reprezentatív fájl lett elmentve ide: {representative_dir}. '
+      f'Az összes feldolgozott fájl törölve lett innen: {output_dir}.')

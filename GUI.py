@@ -8,7 +8,7 @@ from tkinter import ttk
 class DroneNoiseDetectorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Drone Noise Detector")
+        self.root.title('Drone Noise Detector')
         self.is_recording = False
         self.audio_buffer = []
         self.sample_rate = 16000
@@ -19,25 +19,25 @@ class DroneNoiseDetectorApp:
         self.model = load_model('drone_noise_detector_model.keras')
 
         # GUI elrendezés
-        self.label = ttk.Label(root, text="Drone Noise Detector", font=("Arial", 16))
+        self.label = ttk.Label(root, text='Drone Noise Detector', font=('Arial', 16))
         self.label.pack(pady=10)
 
         # Drón jelző
-        self.drone_indicator = tk.Label(root, text="DRONE", bg="gray", fg="white", font=("Arial", 16), width=10)
+        self.drone_indicator = tk.Label(root, text='DRONE', bg='gray', fg='white', font=('Arial', 16), width=10)
         self.drone_indicator.pack(pady=10)
 
         # Felvétel gomb
-        self.start_button = tk.Button(root, text="Recording", bg="lightgray", font=("Arial", 12),
+        self.start_button = tk.Button(root, text='Recording', bg='lightgray', font=('Arial', 12),
                                        command=self.start_recording)
         self.start_button.pack(pady=5)
 
         # Stop gomb
-        self.stop_button = tk.Button(root, text="Stop", bg="lightgray", font=("Arial", 12),
+        self.stop_button = tk.Button(root, text='Stop', bg='lightgray', font=('Arial', 12),
                                       command=self.stop_recording)
         self.stop_button.pack(pady=5)
 
         # Nincs jel jelző
-        self.no_signal_label = tk.Label(root, text="", font=("Arial", 10), fg="red")
+        self.no_signal_label = tk.Label(root, text='', font=('Arial', 10), fg="red")
         self.no_signal_label.pack(pady=10)
 
     def extract_mfcc(self, audio_segment):
@@ -59,7 +59,7 @@ class DroneNoiseDetectorApp:
 
         # Ellenőrizzük hogy halk-e a jel
         if np.abs(indata).max() < 0.01:  # Küszöb csend érzékeléséhez
-            self.no_signal_label.config(text="No signal!")
+            self.no_signal_label.config(text='No signal!')
             self.no_signal_detected = True
         else:
             self.no_signal_label.config(text="")
@@ -89,9 +89,9 @@ class DroneNoiseDetectorApp:
             # Drón indikátor frissítése (ha nincs jel, nem változik)
             if not self.no_signal_detected:
                 if probability > threshold:
-                    self.drone_indicator.config(bg="red")
+                    self.drone_indicator.config(bg='red')
                 else:
-                    self.drone_indicator.config(bg="gray")
+                    self.drone_indicator.config(bg='gray')
     # Felvétel indítása
     def start_recording(self):
         if not self.is_recording:
@@ -109,17 +109,17 @@ class DroneNoiseDetectorApp:
             self.is_recording = False
             self.stream.stop()
             self.stream.close()
-            self.start_button.config(bg="lightgray")  # Alapértelmezett szín visszaállítása
+            self.start_button.config(bg='lightgray')  # Alapértelmezett szín visszaállítása
 
     def flash_start_button(self):
         if self.is_recording:
-            current_color = self.start_button.cget("bg")
-            new_color = "red" if current_color == "lightgray" else "lightgray"
+            current_color = self.start_button.cget('bg')
+            new_color = 'red' if current_color == 'lightgray' else 'lightgray'
             self.start_button.config(bg=new_color)
             self.root.after(500, self.flash_start_button)  # Villogás 500 ms-enként
 
 # Alkalmazás inicializálása
-if __name__ == "__main__":
+if __name__ == '__main__':
     root = tk.Tk()
     app = DroneNoiseDetectorApp(root)
     root.mainloop()
