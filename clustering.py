@@ -71,12 +71,12 @@ for cluster, file_path in cluster_representatives.items():
 
     # Növeljük a számlálót
     file_counter += 1
-"""
+'''
 # Az összes fájl törlése az eredeti output könyvtárból
 for filename in os.listdir(output_dir):
     file_path = os.path.join(output_dir, filename)
     if os.path.isfile(file_path):
         os.remove(file_path)
-"""
+'''
 print(f'{len(cluster_representatives)} reprezentatív fájl lett elmentve ide: {representative_dir}. '
       f'Az összes feldolgozott fájl törölve lett innen: {output_dir}.')
