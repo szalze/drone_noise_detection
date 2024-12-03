@@ -30,7 +30,7 @@ pca = PCA(n_components=2)
 reduced_features = pca.fit_transform(mfcc_features)
 
 # K-Means klaszterezés
-n_clusters = 0  # Állítsd be az elvárt változatosság alapján
+n_clusters = 0
 kmeans = KMeans(n_clusters=n_clusters, random_state=0)
 labels = kmeans.fit_predict(mfcc_features)
 
